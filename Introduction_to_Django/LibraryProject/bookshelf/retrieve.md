@@ -1,9 +1,8 @@
-# Retrieve
->>> from bookshelf.models import Book
->>> Book.objects.all()
-# Output:
-# <QuerySet [<Book: Book object (1)>]>
->>> b = Book.objects.first()
->>> b.title, b.author, b.publication_year
-# Output:
-# ('1984', 'George Orwell', 1949)
+#from bookshelf.models import Book
+
+books = Book.objects.get(title="1984")
+
+getting the result to the standard output
+print(book)
+
+<QuerySet [<Book: 1984>]>
