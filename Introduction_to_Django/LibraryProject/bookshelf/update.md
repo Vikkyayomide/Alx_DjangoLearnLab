@@ -1,9 +1,3 @@
-# Update
->>> b = Book.objects.first()
->>> b.title = "Nineteen Eighty-Four"
->>> b.save()
-# Output:
-# (no explicit output, but the title is updated)
->>> b.title
-# Output:
-# 'Nineteen Eighty-Four'
+from bookshelf.models import Book
+
+book=Book.objects.get(title="1984") book.title = "Nineteen Eighty-Four" book.save()
