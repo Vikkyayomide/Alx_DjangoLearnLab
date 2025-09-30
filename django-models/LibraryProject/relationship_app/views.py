@@ -16,15 +16,18 @@ def list_books(request):
 from django.views.generic import DetailView
 from .models import Library
 
-class LibraryDetailView(DetailView):
-    """
-    Class-based view that:
-    - Displays details for a single Library
-    - Shows all books in that library
-    """
-    model = Library
-    template_name = 'library_detail.html'
-    context_object_name = 'library'
+from django.http import HttpResponse
+from .models import Book
+
+def list_books(request):
+    # Grab all books from the database
+    books = Book.objects.all()
+
+    # Build a plain-text list: "Title by Author"
+    output_lines = [f"{book.title} by {book.author.name}" for book in books]
+
+    # Join with newlines so it’s just pure text
+    return HttpResponse("\n".join(output_lines), content_type="text/plain")
 
 
 
