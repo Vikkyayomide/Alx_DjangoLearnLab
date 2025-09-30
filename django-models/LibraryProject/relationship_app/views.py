@@ -1,33 +1,20 @@
 from django.shortcuts import render
 from .models import Book
 
+# Create your views here.
 def list_books(request):
-    """
-    A function-based view that:
-    - pulls every Book from the database
-    - hands them to a template called list_books.html
-    """
-    books = Book.objects.select_related('author').all()
-    return render(request, 'list_books.html', {'books': books})
+    books = Book.objects.all()
+    context = {'books': books}
+    return render(request, 'relationship_app/list_books.html', context)
 
 
 
-
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView
 from .models import Library
 
-from django.http import HttpResponse
-from .models import Book
-
-def list_books(request):
-    # Grab all books from the database
-    books = Book.objects.all()
-
-    # Build a plain-text list: "Title by Author"
-    output_lines = [f"{book.title} by {book.author.name}" for book in books]
-
-    # Join with newlines so it’s just pure text
-    return HttpResponse("\n".join(output_lines), content_type="text/plain")
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'relationship_app/library_detail.html'
 
 
 
