@@ -1,83 +1,87 @@
-from django.shortcuts import render
-from .models import Book
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.views.generic.detail import DetailView
 
-# Create your views here.
+from .models import Book, Library, UserProfile
+
+
+# =========================
+# Book Views
+# =========================
 def list_books(request):
     books = Book.objects.all()
     context = {'books': books}
     return render(request, 'relationship_app/list_books.html', context)
 
 
-
-from django.contrib.auth.decorators import permission_required
-
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
-    # Logic to add a book
     return render(request, 'relationship_app/add_book.html')
+
 
 @permission_required('relationship_app.can_change_book', raise_exception=True)
 def change_book(request, book_id):
-    # Logic to change a book
-    return render(request, 'relationship_app/change_book.html') 
+    return render(request, 'relationship_app/change_book.html')
+
 
 @permission_required('relationship_app.can_delete_book', raise_exception=True)
 def delete_book(request, book_id):
-    # Logic to delete a book
     return render(request, 'relationship_app/delete_book.html')
 
 
-
-from django.views.generic.detail import DetailView
-from .models import Library
-
+# =========================
+# Library Detail View
+# =========================
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
 
 
-
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-
+# =========================
+# User Registration
+# =========================
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('book_list')  # Redirect to a success page.
+            return redirect('book_list')  # Redirect to book list after registration
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
 
-
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserProfile
-from django.shortcuts import render
-
+# =========================
+# Role-Based Views
+# =========================
 def is_admin(user):
-    return hasattr(user, 'userprofile')and user.userprofile.role == 'admin'
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'admin'
+
+
 @login_required
 @user_passes_test(is_admin)
 def admin_view(request):
-    # Your admin-specific logic here
     return render(request, 'relationship_app/admin_view.html')
+
 
 def is_member(user):
     return hasattr(user, 'userprofile') and user.userprofile.role == 'member'
+
+
 @login_required
 @user_passes_test(is_member)
 def member_view(request):
-    # Your member-specific logic here
     return render(request, 'relationship_app/member_view.html')
+
 
 def is_librarian(user):
     return hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+
 @login_required
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    # Your librarian-specific logic here
     return render(request, 'relationship_app/librarian_view.html')
