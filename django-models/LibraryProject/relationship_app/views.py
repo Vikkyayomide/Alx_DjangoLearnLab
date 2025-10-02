@@ -41,11 +41,12 @@ from django.shortcuts import render
 
 # Admin
 def is_admin(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+    return user.is_authenticated and hasattr(user, 'profile') and user.profile.role == 'Admin'
 
-@user_passes_test(is_admin)
+@user_passes_test(is_admin, login_url='login')  # redirects to login if not authenticated
 def admin_view(request):
-    return render(request, 'relationship_app/admin_view.html')
+    # add context as needed
+    return render(request, 'relationship_app/admin_view.html', {})
 
 # Member
 def is_member(user):
